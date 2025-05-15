@@ -1,9 +1,32 @@
 import Image from "next/image";
+import { Suspense } from "react";
+import { unstable_noStore as noStore } from "next/cache";
 import { refreshHomePage } from "./actions";
 
-export default function Home() {
-  // This timestamp will update whenever the page is revalidated
+// This simulates a slow data fetch
+async function SlowCounter() {
+  // Prevent static generation of this component
+  noStore();
+
+  // Force this component to be dynamic
   const timestamp = new Date().toLocaleTimeString();
+
+  // Simulate a slow API call
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+
+  return (
+    <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+      <p className="text-sm font-mono">
+        Dynamic content loaded at:{" "}
+        <span className="font-bold">{timestamp}</span>
+      </p>
+    </div>
+  );
+}
+
+export default function Home() {
+  // This timestamp will be part of the static content
+  const staticTimestamp = new Date().toLocaleTimeString();
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -16,24 +39,39 @@ export default function Home() {
           height={38}
           priority
         />
+
+        {/* Static content */}
+        <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+          <p className="text-sm font-mono">
+            Static content rendered at build time:{" "}
+            <span className="font-bold">{staticTimestamp}</span>
+          </p>
+        </div>
+
+        {/* Dynamic content with loading state */}
+        <Suspense
+          fallback={
+            <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse">
+              <p className="text-sm">Loading dynamic content...</p>
+            </div>
+          }
+        >
+          <SlowCounter />
+        </Suspense>
+
         <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
           <li className="mb-2 tracking-[-.01em]">
             Get started by editing{" "}
             <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
               app/page.tsx
             </code>
-            .
           </li>
           <li className="tracking-[-.01em]">
-            Save and see your changes instantly here yes.
+            This page demonstrates PPR with both static and dynamic content.
           </li>
         </ol>
 
         <div className="flex flex-col gap-4 items-center">
-          <p className="text-sm font-mono">
-            Page last rendered at:{" "}
-            <span className="font-bold">{timestamp}</span>
-          </p>
           <div className="flex gap-4 items-center flex-col sm:flex-row">
             <form action={refreshHomePage}>
               <button
