@@ -1,12 +1,12 @@
 import Image from "next/image";
 import { Suspense } from "react";
-import { unstable_noStore as noStore } from "next/cache";
+// import { unstable_noStore as noStore } from "next/cache";
 import { refreshHomePage } from "./actions";
 
 // This simulates a slow data fetch
 async function SlowCounter() {
   // Prevent static generation of this component
-  noStore();
+  // noStore();
 
   // Force this component to be dynamic
   const timestamp = new Date().toLocaleTimeString();
