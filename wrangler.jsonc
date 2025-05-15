@@ -41,7 +41,7 @@
   "d1_databases": [
     {
       "binding": "NEXT_TAG_CACHE_D1",
-      "database_id": "<DATABASE_ID>",
+      "database_id": "bd90cf84-2155-4807-81c3-102427a9538b",
       "database_name": "acc-tag-cache",
     },
   ],
